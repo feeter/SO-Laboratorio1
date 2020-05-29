@@ -1,0 +1,4 @@
+Image.o: Image.c Image.h utils.h stb_image/stb_image.h \
+  stb_image/stb_image_write.h
+leerArgs.o: leerArgs.c leerArgs.h
+main.o: main.c leerArgs.h Image.h utils.h
