@@ -3,7 +3,8 @@
 #include "utils.h"
 
 
-
+// ejecutar: ./salida -c 2 -m test -u 120 -n 3 -b
+// compiñar: make
 int main(int argc, char *argv[]) {
 
     /* Lectura de imagen */
@@ -30,30 +31,44 @@ int main(int argc, char *argv[]) {
 
         Image img_original;
 
-        //Image_load(&img_sky, "sky.jpg");
+
         Image_load(&img_original, rutaCompleta);
         ON_ERROR_EXIT(img_original.data == NULL, "Error al cargar imagen");
 
         printf("%s -> Imagen cargada\n" , rutaCompleta);
 
-        // Convert the images to gray
+        // Convertir imagen a escala de grises
         Image img_gris;
         Image_to_gray(&img_original, &img_gris);
 
         printf("%s -> Imagen convertida a gris\n" , rutaCompleta);
 
-        // Save images
+        // Guardar imagenes
         sprintf(fileNameDest,"imagen_%d_gris.jpg", i);
         char *rutaCompletaDest = concatenar(ruta, fileNameDest);
         Image_save(&img_gris, rutaCompletaDest);
 
         printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
 
+        // Filtro lapleciano
+        Image img_lapleciano;
+        Image_lapleciano(&img_gris, &img_lapleciano);
+        printf("%s -> Imagen convertida a lapleciano\n" , rutaCompleta);
+
+        sprintf(fileNameDest,"imagen_%d_lapleciano.jpg", i);
+        rutaCompletaDest = concatenar(ruta, fileNameDest);
+        Image_save(&img_lapleciano, rutaCompletaDest);
+
+        printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
+
+        // Fin Filtro Lapleciano
         
 
         // Binarizando la imagen
         Image img_binary;
-        Image_to_binary(&img_original, &img_binary, uBinarImg);
+        //Image_to_binary(&img_original, &img_binary, uBinarImg);
+        Image_to_binary_from_gray(&img_gris, &img_binary, uBinarImg); // binarizado por la escala de grises
+
 
         printf("%s -> Imagen binarizada\n" , rutaCompleta);
 
@@ -65,7 +80,7 @@ int main(int argc, char *argv[]) {
         printf("%s -> Imagen binarizada guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
 
 
-        // Release memory
+        // Liberar memoria
         Image_free(&img_original);
         Image_free(&img_gris);
         Image_free(&img_binary);

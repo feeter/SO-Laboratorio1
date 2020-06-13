@@ -96,9 +96,9 @@ void Image_to_gray(const Image *orig, Image *gray) {
 }
 
 void Image_to_sepia(const Image *orig, Image *sepia) {
-    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "The input image must have at least 3 channels.");
+    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "La imagen de entrada debe tener al menos 3 canales.");
     Image_create(sepia, orig->width, orig->height, orig->channels, false);
-    ON_ERROR_EXIT(sepia->data == NULL, "Error in creating the image");
+    ON_ERROR_EXIT(sepia->data == NULL, "Error al crear imagen");
 
     // Sepia filter coefficients from https://stackoverflow.com/questions/1061093/how-is-a-sepia-tone-created
     for(unsigned char *p = orig->data, *pg = sepia->data; p != orig->data + orig->size; p += orig->channels, pg += sepia->channels) {
@@ -118,9 +118,9 @@ void Image_to_sepia(const Image *orig, Image *sepia) {
  * Salidas: guarda la imagen binarizada en la *binary
  **/
 void Image_to_binary(const Image *orig, Image *binary, const int umbral) {
-    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "The input image must have at least 3 channels.");
+    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "La imagen de entrada debe tener al menos 3 canales.");
     Image_create(binary, orig->width, orig->height, orig->channels, false);
-    ON_ERROR_EXIT(binary->data == NULL, "Error in creating the image");
+    ON_ERROR_EXIT(binary->data == NULL, "Error al crear imagen");
 
     
 
@@ -138,13 +138,33 @@ void Image_to_binary(const Image *orig, Image *binary, const int umbral) {
     //printf("umbral: %d \n", umbral);
 }
 
+void Image_to_binary_from_gray(const Image *orig, Image *binary, const int umbral){
+    
+    //ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "La imagen de entrada debe tener al menos 3 canales.");
+    Image_create(binary, orig->width, orig->height, orig->channels, false);
+    ON_ERROR_EXIT(binary->data == NULL, "Error al crear imagen");
+
+
+    for(unsigned char *p = orig->data, *pg = binary->data; p != orig->data + orig->size; p += orig->channels, pg += binary->channels) {
+        //printf("*p : %d  \n", *p);
+
+        *pg = (*p > umbral) ? 255 : 0;
+        
+        // *pg = (*p > umbral) ? 255 : 0;
+        // *(pg + 1) = (*(p + 1) > umbral) ? 255 : 0;
+        // *(pg + 2) = (*(p + 2) > umbral) ? 255 : 0;
+
+    }
+    //printf("umbral: %d \n", umbral);
+}
+
 /**
  * Entradas: *orig puntero a la imagen a categorizar, umbral es el porcentaje de categorizacion, *nombre nombre del archivo
  * Funcionamiento: Clasifica una imagen si es o no nearly black segun el umbral en %
  * Salidas: despliega una tabla en consola, columna 1 es "image", columna 2 indica si es o no "nearly black"
 **/
 void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre) {
-    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "The input image must have at least 3 channels.");
+    ON_ERROR_EXIT(!(orig->allocation_ != NO_ALLOCATION && orig->channels >= 3), "La imagen de entrada debe tener al menos 3 canales.");
 
     int pn = 0;
     int pt = 0;
@@ -177,4 +197,110 @@ void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre)
 
 
     //printf("umbral casi negra: %d \n", umbral);
+}
+
+
+/*
+
+def convolucion(image, kernel):
+    image_h = image.shape[0]
+    image_w = image.shape[1]
+
+    kernel_h = kernel.shape[0]
+    kernel_w = kernel.shape[1]
+
+    h = kernel_h//2
+    w = kernel_w//2
+
+    image_conv = np.zeros(image.shape)
+
+    for i in range(h, image_h - h):
+        for j in range(w, image_w - w):
+            sum = 0
+
+            for m in range(kernel_h):
+                for n in range(kernel_w):
+                    sum = sum + kernel[m][n] * image[i - h + m][j - w + n]
+            image_conv[i][j] = sum
+
+    return image_conv
+
+*/
+
+
+void Image_lapleciano(const Image *orig, Image *lapleciano) {
+
+    
+    Image_create(lapleciano, orig->width, orig->height, orig->channels, false);
+    ON_ERROR_EXIT(lapleciano->data == NULL, "Error al crear imagen");
+
+    int image_array_2d[orig->width][orig->height];
+    int origI = 0;
+
+    for (int i = 0; i < orig->width; ++i)
+        for (int j = 0; j < orig->height; ++j)
+        {
+            image_array_2d[i][j] = orig->data[origI];
+            origI = origI + 1;
+        }
+
+
+    int kernel[3][3] = {
+        {0, 1, 0},
+        {1, -4, 1},
+        {0, 1, 0}
+    };
+
+    int img_array_generada[orig->height][orig->width];
+
+    int image_h = orig->height;
+    int image_w = orig->width;
+
+    int kernel_h = 3;
+    int kernel_w = 3;
+
+    int h = 1;
+    int w = 1;
+
+    int i, j, m, n;
+
+    for(i = 1; i < image_h - 1; image_h++){
+        for(j = 1; j < image_w - 1; image_w++){
+            int sum = 0;
+
+            for (m = 0; m < kernel_h; m++){
+                for (n = 0; n < kernel_w; n++)
+                {
+                    sum = sum + kernel[m][n] * image_array_2d[i - h + m][j - w + n];
+                }
+            }
+            img_array_generada[i][j] = sum;
+            //printf("|  %d   |\n", image_w * i + j);
+            //lapleciano->data[image_w * i + j] = sum;
+        }
+    }
+
+    int l = 0;
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            lapleciano->data[l]=img_array_generada[j][i];
+            l++;
+        }
+    }
+
+    //lapleciano->data[i]  = sum;
+
+    //int val = image_array_2d[1][1];
+
+
+    // for(unsigned char *p = orig->data, *pg = lapleciano->data; p != orig->data + orig->size; p += orig->channels, pg += lapleciano->channels) {
+    //     //printf("*p : %d  \n", *p);
+
+    //     //*pg = (*p > umbral) ? 255 : 0;
+        
+
+    // }
+    //printf("umbral: %d \n", umbral);
 }

@@ -25,4 +25,6 @@ void Image_to_gray(const Image *orig, Image *gray);
 void Image_to_sepia(const Image *orig, Image *sepia);
 
 void Image_to_binary(const Image *orig, Image *binary, const int umbral);
+void Image_to_binary_from_gray(const Image *orig, Image *binary, const int umbral);
 void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre);
+void Image_lapleciano(const Image *orig, Image *lapleciano);
