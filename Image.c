@@ -200,50 +200,43 @@ void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre)
 }
 
 
-/*
-
-def convolucion(image, kernel):
-    image_h = image.shape[0]
-    image_w = image.shape[1]
-
-    kernel_h = kernel.shape[0]
-    kernel_w = kernel.shape[1]
-
-    h = kernel_h//2
-    w = kernel_w//2
-
-    image_conv = np.zeros(image.shape)
-
-    for i in range(h, image_h - h):
-        for j in range(w, image_w - w):
-            sum = 0
-
-            for m in range(kernel_h):
-                for n in range(kernel_w):
-                    sum = sum + kernel[m][n] * image[i - h + m][j - w + n]
-            image_conv[i][j] = sum
-
-    return image_conv
-
-*/
-
-
+/**
+ * Entradas: *orig puntero a la imagen a filtrar
+ * Funcionamiento: filtra imagen con arreglo lapleciano (esta version no considera nombre obtenido del argumento)
+ * Salidas: guarda imagen filtrada en *lapleciano
+**/
 void Image_lapleciano(const Image *orig, Image *lapleciano) {
-
     
     Image_create(lapleciano, orig->width, orig->height, orig->channels, false);
     ON_ERROR_EXIT(lapleciano->data == NULL, "Error al crear imagen");
 
-    int image_array_2d[orig->width][orig->height];
-    int origI = 0;
+     
+    int image_array_2d[orig->height][orig->width];
+    
+    int i, j, m, n;
 
-    for (int i = 0; i < orig->width; ++i)
-        for (int j = 0; j < orig->height; ++j)
+    
+    int origI = 0;
+    //printf("height = %d; width = %d \n", orig->height, orig->width);
+    for (i = 0; i < orig->height; ++i)
+        for (j = 0; j < orig->width; ++j)
         {
+            //printf("i = %d; j = %d; origI = %d \n", i, j, origI);
             image_array_2d[i][j] = orig->data[origI];
+            //printf("test \n");
             origI = origI + 1;
         }
 
+/*  mostrar arreglo
+    for(i = 0; i < orig->height; i++)
+    {
+        printf("\n");
+        for(j = 0; j < orig->width; j++)
+        {
+            printf("%d\t", image_array_2d[i][j]);
+        }
+    }
+*/
 
     int kernel[3][3] = {
         {0, 1, 0},
@@ -262,45 +255,46 @@ void Image_lapleciano(const Image *orig, Image *lapleciano) {
     int h = 1;
     int w = 1;
 
-    int i, j, m, n;
-
-    for(i = 1; i < image_h - 1; image_h++){
-        for(j = 1; j < image_w - 1; image_w++){
+    //printf("altura: %d ; anchura: %d \n", image_h, image_w);
+    // proceso de convolusion entre el kernel y la imagen como arreglo 2d
+    for(i = 1; i < image_h - 1; i++){
+        for(j = 1; j < image_w - 1; j++){
             int sum = 0;
 
             for (m = 0; m < kernel_h; m++){
                 for (n = 0; n < kernel_w; n++)
                 {
+                    //printf("image_array_2d: %d\n", image_array_2d[i - h + m][j - w + n]);
                     sum = sum + kernel[m][n] * image_array_2d[i - h + m][j - w + n];
+                    //printf("kernel[%d][%d]: %d; image_array_2d[%d][%d]: %d; sum: %d\n", m, n, kernel[m][n], i-h+m, j-w+n, image_array_2d[i - h + m][j - w + n], sum);
+                    
                 }
             }
-            img_array_generada[i][j] = sum;
+            //printf("sum total: %d\n", sum);
+            img_array_generada[j][i] = sum;
             //printf("|  %d   |\n", image_w * i + j);
-            //lapleciano->data[image_w * i + j] = sum;
         }
     }
-
-    int l = 0;
-    for(i=0;i<n;i++)
+/* imprimir resultado de arreglo 2d 
+    for(i = 0; i < image_w; i++)
     {
-        for(j=0;j<n;j++)
+        printf("\n");
+        for(j = 0; j < image_h; j++)
+        {
+            printf("%d\t", img_array_generada[i][j]);
+        }
+    }
+*/
+
+// transforma de arreglo 2d a arreglo 1d guardandolo en data del lapleciano
+    int l = 0;
+    for(i = 0;i < image_h;i++)
+    {
+        for(j = 0;j < image_w;j++)
         {
             lapleciano->data[l]=img_array_generada[j][i];
             l++;
         }
     }
-
-    //lapleciano->data[i]  = sum;
-
-    //int val = image_array_2d[1][1];
-
-
-    // for(unsigned char *p = orig->data, *pg = lapleciano->data; p != orig->data + orig->size; p += orig->channels, pg += lapleciano->channels) {
-    //     //printf("*p : %d  \n", *p);
-
-    //     //*pg = (*p > umbral) ? 255 : 0;
-        
-
-    // }
-    //printf("umbral: %d \n", umbral);
 }
+

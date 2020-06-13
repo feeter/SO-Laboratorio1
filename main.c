@@ -26,40 +26,40 @@ int main(int argc, char *argv[]) {
 
         char *rutaCompleta = concatenar(ruta, fileNameOrigen);
 
-        printf("%s -> procesando\n" , rutaCompleta);
+        //printf("%s -> procesando\n" , rutaCompleta);
 
 
         Image img_original;
 
 
         Image_load(&img_original, rutaCompleta);
-        ON_ERROR_EXIT(img_original.data == NULL, "Error al cargar imagen");
+        //ON_ERROR_EXIT(img_original.data == NULL, "Error al cargar imagen");
 
-        printf("%s -> Imagen cargada\n" , rutaCompleta);
+        //printf("%s -> Imagen cargada\n" , rutaCompleta);
 
         // Convertir imagen a escala de grises
         Image img_gris;
         Image_to_gray(&img_original, &img_gris);
 
-        printf("%s -> Imagen convertida a gris\n" , rutaCompleta);
+        //printf("%s -> Imagen convertida a gris\n" , rutaCompleta);
 
         // Guardar imagenes
         sprintf(fileNameDest,"imagen_%d_gris.jpg", i);
         char *rutaCompletaDest = concatenar(ruta, fileNameDest);
         Image_save(&img_gris, rutaCompletaDest);
 
-        printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
+        //printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
 
         // Filtro lapleciano
         Image img_lapleciano;
         Image_lapleciano(&img_gris, &img_lapleciano);
-        printf("%s -> Imagen convertida a lapleciano\n" , rutaCompleta);
+        //printf("%s -> Imagen convertida a lapleciano\n" , rutaCompleta);
 
         sprintf(fileNameDest,"imagen_%d_lapleciano.jpg", i);
         rutaCompletaDest = concatenar(ruta, fileNameDest);
         Image_save(&img_lapleciano, rutaCompletaDest);
 
-        printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
+        //printf("%s -> Imagen gris guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
 
         // Fin Filtro Lapleciano
         
@@ -70,14 +70,14 @@ int main(int argc, char *argv[]) {
         Image_to_binary_from_gray(&img_gris, &img_binary, uBinarImg); // binarizado por la escala de grises
 
 
-        printf("%s -> Imagen binarizada\n" , rutaCompleta);
+        //printf("%s -> Imagen binarizada\n" , rutaCompleta);
 
     
         sprintf(fileNameDest,"imagen_%d_binary.jpg", i);
         rutaCompletaDest = concatenar(ruta, fileNameDest);
         Image_save(&img_binary, rutaCompletaDest);
 
-        printf("%s -> Imagen binarizada guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
+        //printf("%s -> Imagen binarizada guardando en: %s\n" , rutaCompleta, rutaCompletaDest);
 
 
         // Liberar memoria
@@ -87,6 +87,7 @@ int main(int argc, char *argv[]) {
 
     }
 
+    // muestra tabla de nearly black
     if (mostrarResult == 1)
     {
         printf("\n\n");
@@ -105,7 +106,7 @@ int main(int argc, char *argv[]) {
             Image img_original;
 
             Image_load(&img_original, rutaCompleta);
-            ON_ERROR_EXIT(img_original.data == NULL, "Error al cargar imagen");
+            //ON_ERROR_EXIT(img_original.data == NULL, "Error al cargar imagen");
 
           
 
