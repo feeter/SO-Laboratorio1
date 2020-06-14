@@ -205,7 +205,7 @@ void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre)
  * Funcionamiento: filtra imagen con arreglo lapleciano (esta version no considera nombre obtenido del argumento)
  * Salidas: guarda imagen filtrada en *lapleciano
 **/
-void Image_lapleciano(const Image *orig, Image *lapleciano) {
+void Image_lapleciano(const Image *orig, Image *lapleciano, const char *fname) {
     
     Image_create(lapleciano, orig->width, orig->height, orig->channels, false);
     ON_ERROR_EXIT(lapleciano->data == NULL, "Error al crear imagen");
@@ -238,11 +238,14 @@ void Image_lapleciano(const Image *orig, Image *lapleciano) {
     }
 */
 
-    int kernel[3][3] = {
-        {0, 1, 0},
-        {1, -4, 1},
-        {0, 1, 0}
-    };
+    // int kernel[3][3] = {
+    //     {0, 1, 0},
+    //     {1, -4, 1},
+    //     {0, 1, 0}
+    // };
+    int **kernel;
+    kernel = leerArchivo(fname);
+    //printf("%d\n", kernel[1][1]);
 
     int img_array_generada[orig->height][orig->width];
 
@@ -298,3 +301,49 @@ void Image_lapleciano(const Image *orig, Image *lapleciano) {
     }
 }
 
+
+/**
+ * Entradas: *fname -> nombre del archivo que contiene el kernel
+ * Funcionamiento: Guarda en memoria, un arreglo de int 3x3 el kernel del archivo que debe ser si o si 3x3
+ * Salidas: Retorna el arreglo con los datos
+**/
+int **leerArchivo(const char *fname){
+
+    //printf("leyendo array\n");
+
+    FILE* f;
+    int height, width, ii, jj;
+    
+
+    if((f = fopen(fname, "r")) == NULL)
+        exit(1);
+
+    if(fscanf(f, "%d%d", &height, &width) != 2)
+        exit(1);
+
+    //int array[height][width];
+    int **array;
+    array =  malloc(sizeof(int*) * 3);
+
+    for(ii = 0; ii < 3; ii++) {
+        array[ii] = malloc(sizeof(int*) * 3);
+    }
+
+    for(jj=0; jj<height; jj++)
+        for(ii=0; ii<width; ii++)
+            if(fscanf(f, "%d", &array[jj][ii]) != 1)
+                exit(1);
+    fclose(f);
+
+    // for(jj=0; jj<height; jj++){
+    //     for(ii=0; ii<width; ii++)
+    //         printf ("%d", array[jj][ii]);
+    //     printf("\n");
+    // }
+
+    return array;
+ 
+    //for (--i; i >= 0; --i)
+        //printf("num[%d] = %d\n", i, nums[i]);
+
+}

@@ -17,6 +17,11 @@ int main(int argc, char *argv[]) {
 
     //printf("cantidad imagenes: %d ; mascara laplaciana: %s ; umbral binario: %d ; umbral clasico: %d ; mostrar resultados: %d \n", cantImgs, maskLaplaciana, uBinarImg, uClasi, mostrarResult);
 
+    // int **kernel;
+    // kernel = leerArchivo(maskLaplaciana);
+    // printf("%d\n", kernel[1][1]);
+
+
     for (int i = 0; i < cantImgs; ++i) {
 
         char fileNameOrigen[50];
@@ -52,7 +57,7 @@ int main(int argc, char *argv[]) {
 
         // Filtro lapleciano
         Image img_lapleciano;
-        Image_lapleciano(&img_gris, &img_lapleciano);
+        Image_lapleciano(&img_gris, &img_lapleciano, maskLaplaciana);
         //printf("%s -> Imagen convertida a lapleciano\n" , rutaCompleta);
 
         sprintf(fileNameDest,"imagen_%d_lapleciano.jpg", i);
@@ -116,7 +121,7 @@ int main(int argc, char *argv[]) {
     }
 
     
-
+   
 }
 
 
