@@ -1,6 +1,7 @@
 salida*
 images/
 .vscode
+*.zip
 
 # Prerequisites
 *.d
