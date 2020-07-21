@@ -202,7 +202,7 @@ void Image_es_casiNegra(const Image *orig, const int umbral, const char *nombre)
 
 /**
  * Entradas: *orig puntero a la imagen a filtrar
- * Funcionamiento: filtra imagen con arreglo lapleciano (esta version no considera nombre obtenido del argumento)
+ * Funcionamiento: filtra imagen con arreglo lapleciano 
  * Salidas: guarda imagen filtrada en *lapleciano
 **/
 void Image_lapleciano(const Image *orig, Image *lapleciano, const char *fname) {

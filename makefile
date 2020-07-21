@@ -22,6 +22,11 @@ $(depends) : $(salida_source) $(salida_headers)
 	@$(CC) -MM $(salida_source) > $@
 
 
+all: program2
+
+program2:
+	$(CC) $(CFLAGS) -o salida2 main2.c
+
 clean :
 	$(RM) $(salida_out) $(salida_objects) $(zipfile) $(depends)
 
